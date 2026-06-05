@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  /* RPG Fantasy Dark Theme Colors */
+  --color-primary-50: oklch(0.97 0.01 285);
+  --color-primary-100: oklch(0.93 0.03 285);
+  --color-primary-200: oklch(0.87 0.05 285);
+  --color-primary-300: oklch(0.77 0.08 285);
+  --color-primary-400: oklch(0.67 0.15 285);
+  --color-primary-500: oklch(0.55 0.2 285);
+  --color-primary-600: oklch(0.5 0.22 285);
+  --color-primary-700: oklch(0.45 0.2 285);
+  --color-primary-800: oklch(0.38 0.17 285);
+  --color-primary-900: oklch(0.32 0.14 285);
+  --color-primary-950: oklch(0.2 0.1 285);
+
+  --color-secondary-50: oklch(0.98 0.01 320);
+  --color-secondary-100: oklch(0.95 0.03 320);
+  --color-secondary-200: oklch(0.9 0.06 320);
+  --color-secondary-300: oklch(0.82 0.12 320);
+  --color-secondary-400: oklch(0.7 0.2 320);
+  --color-secondary-500: oklch(0.6 0.25 320);
+  --color-secondary-600: oklch(0.52 0.25 320);
+  --color-secondary-700: oklch(0.45 0.22 320);
+  --color-secondary-800: oklch(0.38 0.18 320);
+  --color-secondary-900: oklch(0.32 0.14 320);
+  --color-secondary-950: oklch(0.22 0.1 320);
+
+  --color-dark-50: oklch(0.98 0.01 250);
+  --color-dark-100: oklch(0.95 0.01 250);
+  --color-dark-200: oklch(0.9 0.02 250);
+  --color-dark-300: oklch(0.82 0.02 250);
+  --color-dark-400: oklch(0.64 0.03 250);
+  --color-dark-500: oklch(0.5 0.03 250);
+  --color-dark-600: oklch(0.4 0.03 250);
+  --color-dark-700: oklch(0.32 0.03 250);
+  --color-dark-800: oklch(0.24 0.03 250);
+  --color-dark-900: oklch(0.18 0.03 250);
+  --color-dark-950: oklch(0.12 0.02 250);
+
+  --color-accent-gold: oklch(0.78 0.15 85);
+  --color-accent-bronze: oklch(0.6 0.12 50);
+  --color-accent-silver: oklch(0.8 0.01 250);
+  --color-accent-crimson: oklch(0.55 0.2 25);
+  --color-accent-emerald: oklch(0.65 0.17 160);
+
+  --font-family-display: 'Cinzel', serif;
+  --font-family-body: 'Inter', system-ui, sans-serif;
+}
+
+/* Base styles for Storybook context */
+body {
+  background: linear-gradient(135deg, var(--color-dark-800) 0%, var(--color-dark-900) 50%, oklch(0.2 0.05 280) 100%);
+  color: var(--color-dark-100);
+  font-family: var(--font-family-body);
+  margin: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-display);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Custom utilities */
+@utility text-glow {
+  text-shadow: 0 0 10px oklch(0.55 0.2 285 / 0.5);
+}
+
+@utility shadow-glow {
+  box-shadow: 0 0 15px oklch(0.55 0.2 285 / 0.3);
+}
+
+@utility bg-fantasy-gradient {
+  background: linear-gradient(135deg, var(--color-dark-800) 0%, var(--color-dark-900) 50%, oklch(0.2 0.05 280) 100%);
+}
