@@ -15,11 +15,6 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
-    },
-    "./native": {
-      "types": "./src/native.ts",
-      "react-native": "./src/native.ts",
-      "default": "./src/native.ts"
     }
   },
   "scripts": {
@@ -50,10 +45,12 @@
     "@storybook/react": "8.6.14",
     "@storybook/react-vite": "8.6.14",
     "@tailwindcss/vite": "^4.2.2",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vercel/node": "^5.1.0",
+    "jsdom": "^25.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "storybook": "8.6.14",

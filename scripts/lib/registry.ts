@@ -25,8 +25,19 @@ const EXCLUDED_NPM_DEPENDENCIES = new Set([
 /** Matches any relative import of the internal cn utility, e.g. `../../utils/cn`. */
 const CN_IMPORT_PATTERN = /from\s+(['"])(?:\.\.\/)+utils\/cn\1/g;
 
-/** Matches relative imports of sibling components, e.g. `from '../Spinner'`. */
-const SIBLING_IMPORT_PATTERN = /from\s+['"]\.\.\/([A-Z][\w-]*)['"]/g;
+/**
+ * Matches relative imports of other internal utils (e.g. `../../../utils/format`).
+ * Each such util ships as its own `registry:lib` item targeting `lib/<name>.ts`.
+ */
+const UTIL_IMPORT_PATTERN = /from\s+(['"])(?:\.\.\/)+utils\/(?!cn\1)(\w+)\1/g;
+
+/**
+ * Matches relative imports of other design-system components:
+ * same-tier siblings (`from '../Spinner'`) and cross-tier imports
+ * (`from '../../atoms/Avatar'`).
+ */
+const SIBLING_IMPORT_PATTERN =
+  /from\s+['"](?:\.\.\/)+(?:(?:atoms|molecules|organisms)\/)?([A-Z][\w-]*)(?:\/[\w.-]+)?['"]/g;
 
 const IMPORT_SPECIFIER_PATTERN = /from\s+['"]([^'"]+)['"]/g;
 
@@ -43,7 +54,18 @@ export function toKebabCase(name: string): string {
  * `@/lib/utils` (provided by the `utils` registry dependency).
  */
 export function rewriteImports(content: string): string {
-  return content.replace(CN_IMPORT_PATTERN, "from '@/lib/utils'");
+  return content
+    .replace(CN_IMPORT_PATTERN, "from '@/lib/utils'")
+    .replace(UTIL_IMPORT_PATTERN, "from '@/lib/$2'");
+}
+
+/** Detects internal util modules (other than cn) imported by the content. */
+export function detectUtilDependencies(content: string): string[] {
+  const utils = new Set<string>();
+  for (const match of content.matchAll(UTIL_IMPORT_PATTERN)) {
+    utils.add(match[2]);
+  }
+  return [...utils].sort();
 }
 
 /** Resolves an import specifier to its npm package name (handles scopes/subpaths). */
@@ -82,31 +104,42 @@ export function detectSiblingDependencies(content: string): string[] {
   return [...siblings].sort();
 }
 
+export type AtomicTier = 'atoms' | 'molecules' | 'organisms';
+
+export const ATOMIC_TIERS: readonly AtomicTier[] = [
+  'atoms',
+  'molecules',
+  'organisms',
+];
+
 export interface ComponentSource {
   /** Directory name, e.g. `Card`. */
   directory: string;
+  /** Atomic design tier the component lives in. */
+  tier: AtomicTier;
   /** File name → raw content for every non-story source file. */
   files: Map<string, string>;
 }
 
 /**
- * Reads every component folder under `componentsDir`, skipping stories,
- * React Native variants (delivered via the npm `./native` export, not the
- * registry — they would force nativewind/react-native on web consumers)
- * and empty dirs.
+ * Reads every component folder under `componentsDir/{atoms,molecules,organisms}`,
+ * skipping stories, test files and empty dirs.
  */
 export function scanComponents(componentsDir: string): ComponentSource[] {
   const components: ComponentSource[] = [];
-  for (const entry of readdirSync(componentsDir).sort()) {
-    const directory = join(componentsDir, entry);
-    if (!statSync(directory).isDirectory()) continue;
-    const files = new Map<string, string>();
-    for (const fileName of readdirSync(directory).sort()) {
-      if (!/\.(ts|tsx)$/.test(fileName)) continue;
-      if (/\.(stories|native)\.(ts|tsx)$/.test(fileName)) continue;
-      files.set(fileName, readFileSync(join(directory, fileName), 'utf-8'));
+  for (const tier of ATOMIC_TIERS) {
+    const tierDir = join(componentsDir, tier);
+    for (const entry of readdirSync(tierDir).sort()) {
+      const directory = join(tierDir, entry);
+      if (!statSync(directory).isDirectory()) continue;
+      const files = new Map<string, string>();
+      for (const fileName of readdirSync(directory).sort()) {
+        if (!/\.(ts|tsx)$/.test(fileName)) continue;
+        if (/\.(stories|spec|native)\.(ts|tsx)$/.test(fileName)) continue;
+        files.set(fileName, readFileSync(join(directory, fileName), 'utf-8'));
+      }
+      if (files.size > 0) components.push({ directory: entry, tier, files });
     }
-    if (files.size > 0) components.push({ directory: entry, files });
   }
   return components;
 }
@@ -128,26 +161,51 @@ export function buildComponentItem(component: ComponentSource): RegistryItem {
     for (const sibling of detectSiblingDependencies(rawContent)) {
       registryDependencies.add(`/r/${sibling}.json`);
     }
+    for (const util of detectUtilDependencies(rawContent)) {
+      registryDependencies.add(`/r/${util}.json`);
+    }
     files.push({
-      path: `src/components/${component.directory}/${fileName}`,
+      path: `src/components/${component.tier}/${component.directory}/${fileName}`,
       content: rewriteImports(rawContent),
       type: 'registry:ui',
-      target: `components/ui/${component.directory}/${fileName}`,
+      target: `components/ui/${component.tier}/${component.directory}/${fileName}`,
     });
   }
 
+  const tierLabel = component.tier.slice(0, -1); // atoms → atom
   return {
     $schema: REGISTRY_ITEM_SCHEMA,
     name,
     type: 'registry:ui',
     title: component.directory,
-    description: `${component.directory} component from the Morato design system.`,
+    description: `${component.directory} ${tierLabel} from the Morato design system.`,
     dependencies: [...dependencies].sort(),
     registryDependencies: [
       ...(usesCn ? ['utils'] : []),
       ...[...registryDependencies].sort(),
     ],
     files,
+  };
+}
+
+/** Builds a `registry:lib` item for an internal util module (e.g. format). */
+export function buildUtilItem(name: string, content: string): RegistryItem {
+  return {
+    $schema: REGISTRY_ITEM_SCHEMA,
+    name,
+    type: 'registry:item',
+    title: name,
+    description: `${name} utility from the Morato design system.`,
+    dependencies: [],
+    registryDependencies: [],
+    files: [
+      {
+        path: `src/utils/${name}.ts`,
+        content,
+        type: 'registry:lib',
+        target: `lib/${name}.ts`,
+      },
+    ],
   };
 }
 

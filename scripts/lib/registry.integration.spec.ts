@@ -37,15 +37,37 @@ describe('registry build (integration with real sources)', () => {
     expect(item.registryDependencies).toContain('/r/spinner.json');
   });
 
-  it('should never leak internal utils/cn imports into delivered files', () => {
+  it('should never leak internal utils imports into delivered files', () => {
     const components = scanComponents(COMPONENTS_DIR);
 
     const items = components.map(buildComponentItem);
 
     for (const item of items) {
       for (const file of item.files) {
-        expect(file.content).not.toMatch(/utils\/cn/);
+        expect(file.content).not.toMatch(/['"](\.\.\/)+utils\//);
       }
     }
+  });
+
+  it('should link components using formatModifier to the format lib item', () => {
+    const components = scanComponents(COMPONENTS_DIR);
+    const statCard = components.find((c) => c.directory === 'StatCard');
+
+    const item = buildComponentItem(statCard!);
+
+    expect(item.registryDependencies).toContain('/r/format.json');
+  });
+
+  it('should link compound consumers to their atom dependencies', () => {
+    const components = scanComponents(COMPONENTS_DIR);
+    const alert = components.find((c) => c.directory === 'Alert');
+    const confirm = components.find((c) => c.directory === 'ConfirmDialog');
+
+    const alertItem = buildComponentItem(alert!);
+    const confirmItem = buildComponentItem(confirm!);
+
+    expect(alertItem.registryDependencies).toContain('/r/icon-button.json');
+    expect(confirmItem.registryDependencies).toContain('/r/modal.json');
+    expect(confirmItem.registryDependencies).toContain('/r/icon-box.json');
   });
 });

@@ -28,6 +28,5 @@
     "registry/items.ts",
     "vitest.config.ts",
     "tsup.config.ts"
-  ],
-  "exclude": ["**/*.native.tsx", "**/*.native.ts", "src/native.ts"]
+  ]
 }

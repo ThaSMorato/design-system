@@ -1,14 +1,16 @@
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { basename, join } from 'node:path';
 import {
   buildComponentItem,
   buildIndex,
   buildThemeItem,
+  buildUtilItem,
   scanComponents,
 } from './lib/registry';
 
 const ROOT = join(import.meta.dirname, '..');
 const COMPONENTS_DIR = join(ROOT, 'src', 'components');
+const UTILS_DIR = join(ROOT, 'src', 'utils');
 const THEME_CSS = join(ROOT, 'src', 'styles', 'theme.css');
 const OUTPUT_DIR = join(ROOT, 'registry');
 const JSON_DIR = join(OUTPUT_DIR, 'json');
@@ -20,8 +22,18 @@ const HOMEPAGE =
     : 'http://localhost:3000');
 
 const components = scanComponents(COMPONENTS_DIR);
+
+// Internal utils (except cn — consumers get that from the shadcn `utils` item)
+// each become a registry:lib item, e.g. /r/format.json → lib/format.ts.
+const utilItems = readdirSync(UTILS_DIR)
+  .filter((file) => file.endsWith('.ts') && file !== 'cn.ts')
+  .map((file) =>
+    buildUtilItem(basename(file, '.ts'), readFileSync(join(UTILS_DIR, file), 'utf-8'))
+  );
+
 const items = [
   ...components.map(buildComponentItem),
+  ...utilItems,
   buildThemeItem(readFileSync(THEME_CSS, 'utf-8')),
 ];
 const index = buildIndex(items, HOMEPAGE);

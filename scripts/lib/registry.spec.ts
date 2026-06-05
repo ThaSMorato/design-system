@@ -3,8 +3,10 @@ import {
   buildComponentItem,
   buildIndex,
   buildThemeItem,
+  buildUtilItem,
   detectNpmDependencies,
   detectSiblingDependencies,
+  detectUtilDependencies,
   rewriteImports,
   toKebabCase,
   toPackageName,
@@ -14,10 +16,11 @@ import {
 function makeComponent(overrides: Partial<ComponentSource> = {}): ComponentSource {
   return {
     directory: 'Card',
+    tier: 'organisms',
     files: new Map([
       [
         'Card.tsx',
-        "import { cn } from '../../utils/cn';\nexport const Card = () => null;\n",
+        "import { cn } from '../../../utils/cn';\nexport const Card = () => null;\n",
       ],
     ]),
     ...overrides,
@@ -45,10 +48,39 @@ describe('rewriteImports', () => {
     expect(rewriteImports(content)).toBe("import { cn } from '@/lib/utils';");
   });
 
+  it('should rewrite other internal util imports to @/lib/<name>', () => {
+    const content = "import { formatModifier } from '../../../utils/format';";
+
+    expect(rewriteImports(content)).toBe(
+      "import { formatModifier } from '@/lib/format';"
+    );
+  });
+
   it('should leave unrelated imports untouched', () => {
     const content = "import { Spinner } from '../Spinner';";
 
     expect(rewriteImports(content)).toBe(content);
+  });
+});
+
+describe('detectUtilDependencies', () => {
+  it('should detect internal util imports other than cn', () => {
+    const content = [
+      "import { cn } from '../../../utils/cn';",
+      "import { formatModifier } from '../../../utils/format';",
+    ].join('\n');
+
+    expect(detectUtilDependencies(content)).toEqual(['format']);
+  });
+});
+
+describe('buildUtilItem', () => {
+  it('should build a registry:lib item targeting lib/<name>.ts', () => {
+    const item = buildUtilItem('format', 'export const x = 1;');
+
+    expect(item.name).toBe('format');
+    expect(item.files[0].type).toBe('registry:lib');
+    expect(item.files[0].target).toBe('lib/format.ts');
   });
 });
 
@@ -85,14 +117,23 @@ describe('detectNpmDependencies', () => {
 });
 
 describe('detectSiblingDependencies', () => {
-  it('should detect sibling component imports as kebab-case names', () => {
+  it('should detect same-tier sibling imports as kebab-case names', () => {
     const content = "import { Spinner } from '../Spinner';";
 
     expect(detectSiblingDependencies(content)).toEqual(['spinner']);
   });
 
+  it('should detect cross-tier imports', () => {
+    const content = [
+      "import { Avatar } from '../../atoms/Avatar';",
+      "import { Modal } from '../../organisms/Modal/Modal';",
+    ].join('\n');
+
+    expect(detectSiblingDependencies(content)).toEqual(['avatar', 'modal']);
+  });
+
   it('should not treat the utils import as a sibling component', () => {
-    const content = "import { cn } from '../../utils/cn';";
+    const content = "import { cn } from '../../../utils/cn';";
 
     expect(detectSiblingDependencies(content)).toEqual([]);
   });
@@ -107,8 +148,8 @@ describe('buildComponentItem', () => {
     expect(item.name).toBe('card');
     expect(item.type).toBe('registry:ui');
     expect(item.files).toHaveLength(1);
-    expect(item.files[0].path).toBe('src/components/Card/Card.tsx');
-    expect(item.files[0].target).toBe('components/ui/Card/Card.tsx');
+    expect(item.files[0].path).toBe('src/components/organisms/Card/Card.tsx');
+    expect(item.files[0].target).toBe('components/ui/organisms/Card/Card.tsx');
     expect(item.files[0].content).toContain("from '@/lib/utils'");
     expect(item.files[0].content).not.toContain('utils/cn');
   });

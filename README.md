@@ -16,7 +16,7 @@ A TypeScript design system with a Storybook showcase and a shadcn-style componen
 npx shadcn@latest add https://<project>.vercel.app/r/button.json
 ```
 
-This copies the component sources (`components/ui/Button/…`) into the consuming app, installs its npm dependencies, and follows registry dependencies (e.g. `button` pulls `spinner` and the shadcn `utils` item for `cn`).
+This copies the component sources (`components/ui/atoms/Button/…` — the design system is organized in atomic design tiers: `atoms/`, `molecules/`, `organisms/`) into the consuming app, installs its npm dependencies, and follows registry dependencies (e.g. `button` pulls `spinner` and the shadcn `utils` item for `cn`; `confirm-dialog` pulls `modal`, `icon-button`, `icon-box`, `heading`, `text` and `button`). Shared internal utilities ship as `registry:lib` items (e.g. `format` → `lib/format.ts`).
 
 The Tailwind v4 theme tokens ship as their own item:
 
@@ -24,7 +24,7 @@ The Tailwind v4 theme tokens ship as their own item:
 npx shadcn@latest add https://<project>.vercel.app/r/theme.json
 ```
 
-> React Native variants (`*.native.tsx`) are intentionally **not** part of the registry — they are delivered through this package's `./native` export for Metro/Expo consumers.
+> This design system is web-only; React Native variants were removed. See `PLAN.md` for the atomic-design node map and refactor history.
 
 ## Scripts
 
