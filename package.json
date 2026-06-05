@@ -1,0 +1,66 @@
+{
+  "name": "@morato/design-system",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./native": {
+      "types": "./src/native.ts",
+      "react-native": "./src/native.ts",
+      "default": "./src/native.ts"
+    }
+  },
+  "scripts": {
+    "build": "npm run registry:build && npm run storybook:build",
+    "build:lib": "tsup",
+    "dev": "storybook dev -p 6006",
+    "registry:build": "tsx scripts/build-registry.ts",
+    "typecheck": "npm run registry:build && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build -o storybook-static"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.555.0",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "8.6.14",
+    "@storybook/addon-interactions": "8.6.14",
+    "@storybook/react": "8.6.14",
+    "@storybook/react-vite": "8.6.14",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vercel/node": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "storybook": "8.6.14",
+    "tailwindcss": "^4.1.17",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  }
+}

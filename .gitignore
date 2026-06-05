@@ -1,0 +1,8 @@
+node_modules/
+dist/
+storybook-static/
+registry/
+.turbo/
+.vercel/
+.DS_Store
+*.log
