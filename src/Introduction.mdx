@@ -1,0 +1,97 @@
+import { Meta } from '@storybook/blocks';
+
+export const REGISTRY_URL =
+  import.meta.env.VITE_REGISTRY_URL ?? 'http://localhost:3000';
+
+export const Cmd = ({ children }) => (
+  <pre
+    style={{
+      background: '#1a1625',
+      border: '1px solid #2e2940',
+      borderRadius: 8,
+      padding: '12px 16px',
+      overflowX: 'auto',
+    }}
+  >
+    <code>{children}</code>
+  </pre>
+);
+
+<Meta title="Introduction" />
+
+# Morato Design System
+
+An RPG-themed React design system organized in **atomic design** tiers —
+*atoms*, *molecules* and *organisms* — built with Tailwind CSS v4,
+class-variance-authority and the compound-component pattern.
+
+This Storybook is the living catalog. Every component you see here can be
+**copied into your own project, shadcn style**: you get the source files, not
+an npm dependency.
+
+## Installing components in your project
+
+### 1. Prerequisites
+
+Your project must be initialized with the [shadcn CLI](https://ui.shadcn.com/docs/cli)
+(this creates `components.json` with your aliases):
+
+<Cmd>npx shadcn@latest init</Cmd>
+
+The components use the design system's Tailwind v4 theme tokens. Pull them in
+first:
+
+<Cmd>npx shadcn@latest add {REGISTRY_URL}/r/theme.json</Cmd>
+
+Then import the generated `styles/morato-theme.css` in your global stylesheet.
+
+### 2. Add a component
+
+<Cmd>npx shadcn@latest add {REGISTRY_URL}/r/button.json</Cmd>
+
+That's it. The CLI:
+
+- copies the component sources into `components/ui/atoms/Button/`
+  (the atomic tier structure is preserved in your project),
+- installs its npm dependencies (e.g. `class-variance-authority`),
+- **follows registry dependencies transitively** — `button` pulls `spinner`;
+  `confirm-dialog` pulls `modal`, `icon-button`, `icon-box`, `heading`,
+  `text` and `button` automatically,
+- adds the shadcn `utils` item (`cn`) and any shared lib the component uses
+  (e.g. `lib/format.ts`).
+
+### 3. Browse what's available
+
+The full catalog (every item with its files and dependencies, no contents):
+
+<Cmd>curl {REGISTRY_URL}/r/index.json</Cmd>
+
+Component names are the kebab-case of what you see in this sidebar:
+`Atoms/IconButton` → `icon-button`, `Organisms/ConfirmDialog` →
+`confirm-dialog`, and so on.
+
+<Cmd>{`npx shadcn@latest add ${REGISTRY_URL}/r/card.json
+npx shadcn@latest add ${REGISTRY_URL}/r/attribute-card.json
+npx shadcn@latest add ${REGISTRY_URL}/r/wizard-step.json`}</Cmd>
+
+## How this catalog is organized
+
+| Tier | What lives there | Examples |
+|---|---|---|
+| **Atoms** | Single-purpose primitives | Button, IconButton, Badge, Label, Dot, ProgressBar |
+| **Molecules** | Compositions of atoms | FormGroup, Alert, FilterBar, ResourceBar, StatCard |
+| **Organisms** | Complex, self-contained sections | Modal, ConfirmDialog, Card, Banner, WizardStep |
+
+Many components use the **compound pattern** — instead of a wall of props you
+compose parts:
+
+<Cmd>{`<Alert variant="error">
+  <Alert.Icon />
+  <Alert.Body>
+    <Alert.Title>Oops</Alert.Title>
+    <Alert.Description>Something failed.</Alert.Description>
+  </Alert.Body>
+  <Alert.Dismiss onDismiss={close} />
+</Alert>`}</Cmd>
+
+Each story page documents the parts and variants of its component.

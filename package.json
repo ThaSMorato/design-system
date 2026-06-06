@@ -21,6 +21,8 @@
     "build": "npm run registry:build && npm run storybook:build",
     "build:lib": "tsup",
     "dev": "storybook dev -p 6006",
+    "preview": "npm run build && tsx scripts/preview.ts",
+    "preview:serve": "tsx scripts/preview.ts",
     "registry:build": "tsx scripts/build-registry.ts",
     "typecheck": "npm run registry:build && tsc --noEmit",
     "test": "vitest run",

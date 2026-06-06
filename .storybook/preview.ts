@@ -3,6 +3,11 @@ import '../src/styles/theme.css';
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: ['Introduction', 'Atoms', 'Molecules', 'Organisms'],
+      },
+    },
     backgrounds: {
       default: 'dark',
       values: [
