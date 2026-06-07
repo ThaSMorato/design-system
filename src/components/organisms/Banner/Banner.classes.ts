@@ -3,7 +3,7 @@ import { cva } from 'class-variance-authority';
 export const bannerVariants = cva('rounded-lg border p-4', {
   variants: {
     variant: {
-      info: 'bg-blue-900/20 border-blue-700/50',
+      info: 'bg-info-surface border-info-border',
       success: 'bg-accent-emerald/20 border-accent-emerald/50',
       warning: 'bg-accent-gold/20 border-accent-gold/50',
       danger: 'bg-accent-crimson/20 border-accent-crimson/50',
@@ -19,7 +19,7 @@ export const bannerIconContainerVariants = cva(
   {
     variants: {
       variant: {
-        info: 'bg-blue-900/50 text-blue-400',
+        info: 'bg-info-surface text-info-solid',
         success: 'bg-accent-emerald/30 text-accent-emerald',
         warning: 'bg-accent-gold/30 text-accent-gold',
         danger: 'bg-accent-crimson/30 text-accent-crimson',
@@ -34,7 +34,7 @@ export const bannerIconContainerVariants = cva(
 export const bannerTitleVariants = cva('font-semibold', {
   variants: {
     variant: {
-      info: 'text-blue-300',
+      info: 'text-info-text',
       success: 'text-accent-emerald',
       warning: 'text-accent-gold',
       danger: 'text-accent-crimson',
@@ -48,7 +48,7 @@ export const bannerTitleVariants = cva('font-semibold', {
 export const bannerDescriptionVariants = cva('text-sm', {
   variants: {
     variant: {
-      info: 'text-blue-400/80',
+      info: 'text-info-text/80',
       success: 'text-accent-emerald/80',
       warning: 'text-accent-gold/80',
       danger: 'text-accent-crimson/80',

@@ -1,7 +1,15 @@
 @import "tailwindcss";
 
+/**
+ * Morato design system theme — dark mode is the DEFAULT.
+ * Add class="light" to <html> to switch to the warm-parchment light mode.
+ *
+ * Tailwind v4 emits utilities as var() references, so every `.light`
+ * override below re-themes all components at runtime with no JS.
+ */
+
 @theme {
-  /* RPG Fantasy Dark Theme Colors */
+  /* ── RPG Fantasy Dark Theme (default) ─────────────────────────────── */
   --color-primary-50: oklch(0.97 0.01 285);
   --color-primary-100: oklch(0.93 0.03 285);
   --color-primary-200: oklch(0.87 0.05 285);
@@ -26,6 +34,11 @@
   --color-secondary-900: oklch(0.32 0.14 320);
   --color-secondary-950: oklch(0.22 0.1 320);
 
+  /*
+   * The "dark" scale is a surface/foreground ladder:
+   * 100 ≈ primary text · 300/400 ≈ muted text · 600/700 ≈ borders ·
+   * 800/900 ≈ surfaces/background. Light mode inverts it (see `.light`).
+   */
   --color-dark-50: oklch(0.98 0.01 250);
   --color-dark-100: oklch(0.95 0.01 250);
   --color-dark-200: oklch(0.9 0.02 250);
@@ -34,6 +47,7 @@
   --color-dark-500: oklch(0.5 0.03 250);
   --color-dark-600: oklch(0.4 0.03 250);
   --color-dark-700: oklch(0.32 0.03 250);
+  --color-dark-750: oklch(0.28 0.03 250);
   --color-dark-800: oklch(0.24 0.03 250);
   --color-dark-900: oklch(0.18 0.03 250);
   --color-dark-950: oklch(0.12 0.02 250);
@@ -44,13 +58,128 @@
   --color-accent-crimson: oklch(0.55 0.2 25);
   --color-accent-emerald: oklch(0.65 0.17 160);
 
+  /* ── Semantic status tokens (dark defaults) ───────────────────────── */
+  --color-info-surface: color-mix(in oklab, var(--color-blue-900) 30%, transparent);
+  --color-info-border: color-mix(in oklab, var(--color-blue-700) 50%, transparent);
+  --color-info-text: var(--color-blue-300);
+  --color-info-solid: var(--color-blue-500);
+  --color-info-solid-strong: var(--color-blue-600);
+
+  --color-success-surface: color-mix(in oklab, var(--color-emerald-900) 30%, transparent);
+  --color-success-border: color-mix(in oklab, var(--color-emerald-700) 50%, transparent);
+  --color-success-text: var(--color-emerald-300);
+  --color-success-solid: var(--color-emerald-500);
+  --color-success-solid-strong: var(--color-emerald-600);
+
+  --color-warning-surface: color-mix(in oklab, var(--color-amber-900) 30%, transparent);
+  --color-warning-border: color-mix(in oklab, var(--color-amber-700) 50%, transparent);
+  --color-warning-text: var(--color-amber-300);
+  --color-warning-solid: var(--color-amber-500);
+  --color-warning-solid-strong: var(--color-amber-600);
+
+  --color-error-surface: color-mix(in oklab, var(--color-red-900) 30%, transparent);
+  --color-error-border: color-mix(in oklab, var(--color-red-700) 50%, transparent);
+  --color-error-text: var(--color-red-300);
+  --color-error-solid: var(--color-red-500);
+  --color-error-solid-strong: var(--color-red-600);
+
   --font-family-display: 'Cinzel', serif;
   --font-family-body: 'Inter', system-ui, sans-serif;
 }
 
+/* Effect/background variables (not Tailwind tokens, but mode-aware) */
+:root {
+  --glow-text: oklch(0.55 0.2 285 / 0.5);
+  --glow-shadow: oklch(0.55 0.2 285 / 0.3);
+  --page-gradient-end: oklch(0.2 0.05 280);
+}
+
+/* ── Warm-parchment light mode ────────────────────────────────────────
+   Same token names, light values. The dark-* ladder keeps its meaning
+   (100 = text, 800/900 = surfaces) — only the values invert. */
+.light {
+  --color-primary-50: oklch(0.25 0.1 285);
+  --color-primary-100: oklch(0.3 0.12 285);
+  --color-primary-200: oklch(0.38 0.15 285);
+  --color-primary-300: oklch(0.45 0.18 285);
+  --color-primary-400: oklch(0.5 0.2 285);
+  --color-primary-500: oklch(0.55 0.2 285);
+  --color-primary-600: oklch(0.5 0.22 285);
+  --color-primary-700: oklch(0.45 0.2 285);
+  --color-primary-800: oklch(0.85 0.06 285);
+  --color-primary-900: oklch(0.91 0.04 285);
+  --color-primary-950: oklch(0.96 0.02 285);
+
+  --color-secondary-50: oklch(0.28 0.1 320);
+  --color-secondary-100: oklch(0.34 0.13 320);
+  --color-secondary-200: oklch(0.42 0.16 320);
+  --color-secondary-300: oklch(0.48 0.2 320);
+  --color-secondary-400: oklch(0.52 0.22 320);
+  --color-secondary-500: oklch(0.55 0.24 320);
+  --color-secondary-600: oklch(0.5 0.24 320);
+  --color-secondary-700: oklch(0.45 0.22 320);
+  --color-secondary-800: oklch(0.86 0.06 320);
+  --color-secondary-900: oklch(0.92 0.04 320);
+  --color-secondary-950: oklch(0.96 0.02 320);
+
+  --color-dark-50: oklch(0.12 0.02 60);
+  --color-dark-100: oklch(0.2 0.025 60);
+  --color-dark-200: oklch(0.28 0.025 60);
+  --color-dark-300: oklch(0.36 0.025 60);
+  --color-dark-400: oklch(0.5 0.025 70);
+  --color-dark-500: oklch(0.62 0.025 75);
+  --color-dark-600: oklch(0.78 0.03 80);
+  --color-dark-700: oklch(0.85 0.035 85);
+  --color-dark-750: oklch(0.88 0.035 85);
+  --color-dark-800: oklch(0.92 0.035 85);
+  --color-dark-900: oklch(0.96 0.03 85);
+  --color-dark-950: oklch(0.98 0.02 85);
+
+  --color-accent-gold: oklch(0.55 0.13 80);
+  --color-accent-bronze: oklch(0.48 0.11 50);
+  --color-accent-silver: oklch(0.45 0.01 250);
+  --color-accent-crimson: oklch(0.48 0.19 25);
+  --color-accent-emerald: oklch(0.5 0.15 160);
+
+  --color-info-surface: color-mix(in oklab, var(--color-blue-500) 12%, transparent);
+  --color-info-border: color-mix(in oklab, var(--color-blue-600) 35%, transparent);
+  --color-info-text: var(--color-blue-700);
+  --color-info-solid: var(--color-blue-600);
+  --color-info-solid-strong: var(--color-blue-700);
+
+  --color-success-surface: color-mix(in oklab, var(--color-emerald-500) 12%, transparent);
+  --color-success-border: color-mix(in oklab, var(--color-emerald-600) 35%, transparent);
+  --color-success-text: var(--color-emerald-700);
+  --color-success-solid: var(--color-emerald-600);
+  --color-success-solid-strong: var(--color-emerald-700);
+
+  --color-warning-surface: color-mix(in oklab, var(--color-amber-500) 14%, transparent);
+  --color-warning-border: color-mix(in oklab, var(--color-amber-600) 40%, transparent);
+  --color-warning-text: var(--color-amber-700);
+  --color-warning-solid: var(--color-amber-600);
+  --color-warning-solid-strong: var(--color-amber-700);
+
+  --color-error-surface: color-mix(in oklab, var(--color-red-500) 12%, transparent);
+  --color-error-border: color-mix(in oklab, var(--color-red-600) 35%, transparent);
+  --color-error-text: var(--color-red-700);
+  --color-error-solid: var(--color-red-600);
+  --color-error-solid-strong: var(--color-red-700);
+
+  --glow-text: oklch(0.45 0.2 285 / 0.25);
+  --glow-shadow: oklch(0.45 0.2 285 / 0.15);
+  --page-gradient-end: oklch(0.93 0.04 310);
+
+  color-scheme: light;
+}
+
 /* Base styles for Storybook context */
 body {
-  background: linear-gradient(135deg, var(--color-dark-800) 0%, var(--color-dark-900) 50%, oklch(0.2 0.05 280) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-dark-800) 0%,
+    var(--color-dark-900) 50%,
+    var(--page-gradient-end) 100%
+  );
   color: var(--color-dark-100);
   font-family: var(--font-family-body);
   margin: 0;
@@ -67,13 +196,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom utilities */
 @utility text-glow {
-  text-shadow: 0 0 10px oklch(0.55 0.2 285 / 0.5);
+  text-shadow: 0 0 10px var(--glow-text);
 }
 
 @utility shadow-glow {
-  box-shadow: 0 0 15px oklch(0.55 0.2 285 / 0.3);
+  box-shadow: 0 0 15px var(--glow-shadow);
 }
 
 @utility bg-fantasy-gradient {
-  background: linear-gradient(135deg, var(--color-dark-800) 0%, var(--color-dark-900) 50%, oklch(0.2 0.05 280) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-dark-800) 0%,
+    var(--color-dark-900) 50%,
+    var(--page-gradient-end) 100%
+  );
 }

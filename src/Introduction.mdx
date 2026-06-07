@@ -74,6 +74,26 @@ Component names are the kebab-case of what you see in this sidebar:
 npx shadcn@latest add ${REGISTRY_URL}/r/attribute-card.json
 npx shadcn@latest add ${REGISTRY_URL}/r/wizard-step.json`}</Cmd>
 
+## Dark & light mode
+
+**Dark is the default.** The theme ships both modes: every color is a CSS
+variable, and adding the `light` class to your root element switches to the
+warm-parchment light theme — no component changes, no re-render needed.
+
+<Cmd>{`// toggle however you like — e.g. from your app's settings
+document.documentElement.classList.toggle('light', userPrefersLight);
+
+// or follow the OS preference
+const mq = window.matchMedia('(prefers-color-scheme: light)');
+document.documentElement.classList.toggle('light', mq.matches);`}</Cmd>
+
+Status colors (info/success/warning/error) use semantic tokens
+(`bg-info-surface`, `text-error-text`, `bg-success-solid`, …) with per-mode
+values, so Alerts, Badges and Banners stay legible in both modes.
+
+Use the **theme toolbar button** (sun/moon) above to preview every component
+in either mode.
+
 ## How this catalog is organized
 
 | Tier | What lives there | Examples |

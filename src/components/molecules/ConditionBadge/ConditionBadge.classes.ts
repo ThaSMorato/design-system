@@ -9,7 +9,7 @@ export const conditionBadgeVariants = cva(
         positive: 'bg-accent-emerald/20 text-accent-emerald',
         negative: 'bg-accent-crimson/20 text-accent-crimson',
         neutral: 'bg-accent-gold/20 text-accent-gold',
-        status: 'bg-blue-500/20 text-blue-400',
+        status: 'bg-info-solid/20 text-info-solid',
       },
       size: {
         sm: 'px-2 py-0.5 text-xs',

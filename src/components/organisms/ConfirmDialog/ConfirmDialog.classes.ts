@@ -15,14 +15,14 @@ export const confirmIconConfig: Record<
 > = {
   danger: { bgColor: 'bg-accent-crimson/20', textColor: 'text-accent-crimson' },
   warning: { bgColor: 'bg-accent-gold/20', textColor: 'text-accent-gold' },
-  info: { bgColor: 'bg-blue-500/20', textColor: 'text-blue-400' },
+  info: { bgColor: 'bg-info-solid/20', textColor: 'text-info-solid' },
   success: { bgColor: 'bg-accent-emerald/20', textColor: 'text-accent-emerald' },
 };
 
 export const confirmButtonConfig: Record<ConfirmDialogVariant, string> = {
   danger: 'bg-accent-crimson hover:bg-accent-crimson/90 active:bg-accent-crimson/90 text-white',
   warning: 'bg-accent-gold hover:bg-accent-gold/90 active:bg-accent-gold/90 text-dark-900',
-  info: 'bg-blue-500 hover:bg-blue-600 active:bg-blue-600 text-white',
+  info: 'bg-info-solid hover:bg-info-solid-strong active:bg-info-solid-strong text-white',
   success: 'bg-accent-emerald hover:bg-accent-emerald/90 active:bg-accent-emerald/90 text-dark-900',
 };
 

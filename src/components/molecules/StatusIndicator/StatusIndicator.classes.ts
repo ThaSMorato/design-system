@@ -20,7 +20,7 @@ export const statusIndicatorVariants = cva('block rounded-full', {
       success: 'bg-accent-emerald',
       warning: 'bg-accent-gold',
       error: 'bg-accent-crimson',
-      info: 'bg-blue-500',
+      info: 'bg-info-solid',
       default: 'bg-dark-400',
     },
     size: {
@@ -68,7 +68,7 @@ export function statusIndicatorColor(
     case 'error':
       return 'bg-accent-crimson';
     case 'info':
-      return 'bg-blue-500';
+      return 'bg-info-solid';
     case 'offline':
       return 'bg-dark-500';
     default:

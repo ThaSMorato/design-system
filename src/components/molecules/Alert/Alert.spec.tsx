@@ -26,7 +26,7 @@ describe('Alert (compound)', () => {
 
       const alert = screen.getByRole('alert');
 
-      expect(alert.className).toContain('bg-red-900/30');
+      expect(alert.className).toContain('bg-error-surface');
     });
 
     it('should render title and description', () => {

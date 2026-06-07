@@ -10,10 +10,10 @@ export const badgeVariants = cva('inline-flex items-center font-medium rounded-f
       'status-active': 'bg-accent-emerald/20 text-accent-emerald',
       'status-paused': 'bg-accent-gold/20 text-accent-gold',
       'status-inactive': 'bg-dark-700 text-dark-300',
-      success: 'bg-emerald-900/30 text-emerald-300 border border-emerald-700/50',
-      warning: 'bg-amber-900/30 text-amber-300 border border-amber-700/50',
-      error: 'bg-red-900/30 text-red-300 border border-red-700/50',
-      info: 'bg-blue-900/30 text-blue-300 border border-blue-700/50',
+      success: 'bg-success-surface text-success-text border border-success-border',
+      warning: 'bg-warning-surface text-warning-text border border-warning-border',
+      error: 'bg-error-surface text-error-text border border-error-border',
+      info: 'bg-info-surface text-info-text border border-info-border',
       progression: 'bg-dark-700 text-dark-300',
     },
     size: {
@@ -53,13 +53,13 @@ export function badgeDotClassName(variant: BadgeVariant | null | undefined): str
     case 'status-inactive':
       return 'bg-dark-400';
     case 'success':
-      return 'bg-emerald-400';
+      return 'bg-success-solid';
     case 'warning':
-      return 'bg-amber-400';
+      return 'bg-warning-solid';
     case 'error':
-      return 'bg-red-400';
+      return 'bg-error-solid';
     case 'info':
-      return 'bg-blue-400';
+      return 'bg-info-solid';
     default:
       return '';
   }

@@ -2,20 +2,42 @@ import type { Preview } from '@storybook/react';
 import '../src/styles/theme.css';
 
 const preview: Preview = {
+  globalTypes: {
+    theme: {
+      description: 'Color mode',
+      toolbar: {
+        title: 'Theme',
+        icon: 'mirror',
+        items: [
+          { value: 'dark', icon: 'moon', title: 'Dark' },
+          { value: 'light', icon: 'sun', title: 'Light' },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: {
+    theme: 'dark',
+  },
+  decorators: [
+    (Story, context) => {
+      // Same mechanism consumers use: `.light` on the root element.
+      document.documentElement.classList.toggle(
+        'light',
+        context.globals.theme === 'light'
+      );
+      return Story();
+    },
+  ],
   parameters: {
     options: {
       storySort: {
         order: ['Introduction', 'Atoms', 'Molecules', 'Organisms'],
       },
     },
-    backgrounds: {
-      default: 'dark',
-      values: [
-        { name: 'dark', value: '#0f0d1a' },
-        { name: 'dark-surface', value: '#1a1625' },
-        { name: 'light', value: '#ffffff' },
-      ],
-    },
+    // The themed body gradient (src/styles/theme.css) provides the canvas
+    // background for both modes; the backgrounds addon would paint over it.
+    backgrounds: { disable: true },
     controls: {
       matchers: {
         color: /(background|color)$/i,

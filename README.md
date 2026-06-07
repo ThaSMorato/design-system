@@ -26,6 +26,10 @@ npx shadcn@latest add https://<project>.vercel.app/r/theme.json
 
 > This design system is web-only; React Native variants were removed. See `PLAN.md` for the atomic-design node map and refactor history.
 
+### Dark & light mode
+
+Dark is the default; add `class="light"` to `<html>` for the warm-parchment light mode. All colors are CSS variables (Tailwind v4 `@theme`), so the switch needs no component changes. Status colors use semantic tokens (`info|success|warning|error` × `surface|border|text|solid|solid-strong`) with per-mode values. The Storybook toolbar has a sun/moon toggle to preview both.
+
 ## Scripts
 
 | Script | What it does |
