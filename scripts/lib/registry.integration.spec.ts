@@ -58,6 +58,35 @@ describe('registry build (integration with real sources)', () => {
     expect(item.registryDependencies).toContain('/r/format.json');
   });
 
+  it('should link components to their extracted hook items', () => {
+    const components = scanComponents(COMPONENTS_DIR);
+    const find = (dir: string) =>
+      buildComponentItem(components.find((c) => c.directory === dir)!);
+
+    expect(find('Tooltip').registryDependencies).toContain(
+      '/r/use-delayed-visibility.json'
+    );
+    expect(find('CopyableLink').registryDependencies).toEqual(
+      expect.arrayContaining(['/r/use-clipboard.json', '/r/use-web-share.json'])
+    );
+    expect(find('Modal').registryDependencies).toEqual(
+      expect.arrayContaining(['/r/use-scroll-lock.json', '/r/use-on-escape.json'])
+    );
+    expect(find('DangerZone').registryDependencies).toContain(
+      '/r/use-confirm-action.json'
+    );
+  });
+
+  it('should not leak relative hook imports into delivered files', () => {
+    const components = scanComponents(COMPONENTS_DIR);
+
+    for (const component of components) {
+      for (const file of buildComponentItem(component).files) {
+        expect(file.content).not.toMatch(/['"](\.\.\/)+hooks\//);
+      }
+    }
+  });
+
   it('should link compound consumers to their atom dependencies', () => {
     const components = scanComponents(COMPONENTS_DIR);
     const alert = components.find((c) => c.directory === 'Alert');

@@ -1,7 +1,9 @@
-import { forwardRef, useState, type HTMLAttributes } from 'react';
+import { forwardRef, type HTMLAttributes } from 'react';
 import { cn } from '../../../utils/cn';
 import { type VariantProps } from 'class-variance-authority';
 import { Copy, Check, Share2 } from 'lucide-react';
+import { useClipboard } from '../../../hooks/use-clipboard';
+import { useWebShare } from '../../../hooks/use-web-share';
 import { IconButton } from '../../atoms/IconButton';
 import {
   COPY_BUTTON_SIZES,
@@ -49,33 +51,16 @@ const CopyableLink = forwardRef<HTMLDivElement, CopyableLinkProps>(
     },
     ref
   ) => {
-    const [copied, setCopied] = useState(false);
     const sizeKey = (size || 'md') as CopyableLinkSize;
+    const { copied, copy } = useClipboard({
+      timeout: copiedDuration,
+      onCopy: onCopied,
+    });
+    const { canShare, share } = useWebShare();
 
-    const handleCopy = async () => {
-      try {
-        await navigator.clipboard.writeText(value);
-        setCopied(true);
-        onCopied?.();
-        setTimeout(() => setCopied(false), copiedDuration);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    };
-
-    const handleShare = async () => {
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: shareTitle, text: shareText, url: value });
-        } catch (err) {
-          if ((err as Error).name !== 'AbortError') {
-            console.error('Share failed:', err);
-          }
-        }
-      }
-    };
-
-    const canShare = typeof navigator !== 'undefined' && navigator.share;
+    const handleCopy = () => copy(value);
+    const handleShare = () =>
+      share({ title: shareTitle, text: shareText, url: value });
 
     return (
       <div

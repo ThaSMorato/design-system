@@ -2,6 +2,7 @@ import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { basename, join } from 'node:path';
 import {
   buildComponentItem,
+  buildHookItem,
   buildIndex,
   buildThemeItem,
   buildUtilItem,
@@ -11,6 +12,7 @@ import {
 const ROOT = join(import.meta.dirname, '..');
 const COMPONENTS_DIR = join(ROOT, 'src', 'components');
 const UTILS_DIR = join(ROOT, 'src', 'utils');
+const HOOKS_DIR = join(ROOT, 'src', 'hooks');
 const THEME_CSS = join(ROOT, 'src', 'styles', 'theme.css');
 const OUTPUT_DIR = join(ROOT, 'registry');
 const JSON_DIR = join(OUTPUT_DIR, 'json');
@@ -23,17 +25,32 @@ const HOMEPAGE =
 
 const components = scanComponents(COMPONENTS_DIR);
 
+/** Source `.ts` modules in a flat dir, excluding tests and barrels. */
+const sourceModules = (dir: string, exclude: string[] = []) =>
+  readdirSync(dir).filter(
+    (file) =>
+      file.endsWith('.ts') &&
+      !file.endsWith('.spec.ts') &&
+      file !== 'index.ts' &&
+      !exclude.includes(file)
+  );
+
 // Internal utils (except cn — consumers get that from the shadcn `utils` item)
 // each become a registry:lib item, e.g. /r/format.json → lib/format.ts.
-const utilItems = readdirSync(UTILS_DIR)
-  .filter((file) => file.endsWith('.ts') && file !== 'cn.ts')
-  .map((file) =>
-    buildUtilItem(basename(file, '.ts'), readFileSync(join(UTILS_DIR, file), 'utf-8'))
-  );
+const utilItems = sourceModules(UTILS_DIR, ['cn.ts']).map((file) =>
+  buildUtilItem(basename(file, '.ts'), readFileSync(join(UTILS_DIR, file), 'utf-8'))
+);
+
+// Each hook (src/hooks/use-*.ts) becomes a registry:hook item,
+// e.g. /r/use-clipboard.json → hooks/use-clipboard.ts.
+const hookItems = sourceModules(HOOKS_DIR).map((file) =>
+  buildHookItem(basename(file, '.ts'), readFileSync(join(HOOKS_DIR, file), 'utf-8'))
+);
 
 const items = [
   ...components.map(buildComponentItem),
   ...utilItems,
+  ...hookItems,
   buildThemeItem(readFileSync(THEME_CSS, 'utf-8')),
 ];
 const index = buildIndex(items, HOMEPAGE);

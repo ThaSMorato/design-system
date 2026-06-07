@@ -1,11 +1,7 @@
-import {
-  forwardRef,
-  useState,
-  useRef,
-  type ReactNode,
-} from 'react';
+import { forwardRef, type ReactNode } from 'react';
 import { cn } from '../../../utils/cn';
 import { type VariantProps } from 'class-variance-authority';
+import { useDelayedVisibility } from '../../../hooks/use-delayed-visibility';
 import {
   TOOLTIP_ARROW_BASE_CLASS,
   TOOLTIP_WRAPPER_CLASS,
@@ -39,32 +35,17 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
     },
     ref,
   ) => {
-    const [isVisible, setIsVisible] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const showTooltip = () => {
-      if (disabled) return;
-      timeoutRef.current = setTimeout(() => setIsVisible(true), delay);
-    };
-
-    const hideTooltip = () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      setIsVisible(false);
-    };
-
+    const { isVisible, show, hide } = useDelayedVisibility({ delay, disabled });
     const resolvedPosition = (position ?? 'top') as TooltipPosition;
 
     return (
       <div
         ref={ref}
         className={cn(TOOLTIP_WRAPPER_CLASS, className)}
-        onMouseEnter={showTooltip}
-        onMouseLeave={hideTooltip}
-        onFocus={showTooltip}
-        onBlur={hideTooltip}
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onFocus={show}
+        onBlur={hide}
       >
         {children}
         {isVisible && tooltipContent && (

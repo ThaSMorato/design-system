@@ -1,13 +1,9 @@
-import {
-  forwardRef,
-  type HTMLAttributes,
-  type ReactNode,
-  useEffect,
-  useCallback,
-} from 'react';
+import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { cn } from '../../../utils/cn';
 import { type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
+import { useOnEscape } from '../../../hooks/use-on-escape';
+import { useScrollLock } from '../../../hooks/use-scroll-lock';
 import { IconButton } from '../../atoms/IconButton';
 import { Overlay } from '../../atoms/Overlay';
 import {
@@ -42,30 +38,12 @@ const ModalRoot = forwardRef<HTMLDivElement, ModalProps>(
     },
     ref,
   ) => {
-    const handleEscape = useCallback(
-      (e: KeyboardEvent) => {
-        if (closeOnEscape && e.key === 'Escape') onClose();
-      },
-      [closeOnEscape, onClose],
-    );
+    useScrollLock(isOpen);
+    useOnEscape(onClose, isOpen && closeOnEscape);
 
-    const handleBackdropClick = useCallback(
-      (e: React.MouseEvent) => {
-        if (closeOnBackdrop && e.target === e.currentTarget) onClose();
-      },
-      [closeOnBackdrop, onClose],
-    );
-
-    useEffect(() => {
-      if (isOpen) {
-        document.addEventListener('keydown', handleEscape);
-        document.body.style.overflow = 'hidden';
-      }
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = '';
-      };
-    }, [isOpen, handleEscape]);
+    const handleBackdropClick = (e: React.MouseEvent) => {
+      if (closeOnBackdrop && e.target === e.currentTarget) onClose();
+    };
 
     if (!isOpen) return null;
 

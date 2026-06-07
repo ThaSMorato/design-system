@@ -1,6 +1,7 @@
-import { forwardRef, useState, type HTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
 import { cn } from '../../../utils/cn';
 import { AlertTriangle } from 'lucide-react';
+import { useConfirmAction } from '../../../hooks/use-confirm-action';
 import { Button } from '../../atoms/Button';
 import { Heading } from '../../atoms/Heading';
 import { Text } from '../../atoms/Text';
@@ -47,16 +48,7 @@ const DangerZone = forwardRef<HTMLDivElement, DangerZoneProps>(
     },
     ref
   ) => {
-    const [showConfirm, setShowConfirm] = useState(false);
-
-    const handleAction = async () => {
-      await onAction();
-      setShowConfirm(false);
-    };
-
-    const handleCancel = () => {
-      setShowConfirm(false);
-    };
+    const { isConfirming, request, confirm, cancel } = useConfirmAction(onAction);
 
     return (
       <div ref={ref} className={cn(DANGER_ZONE_ROOT_CLASS, className)} {...props}>
@@ -69,12 +61,12 @@ const DangerZone = forwardRef<HTMLDivElement, DangerZoneProps>(
         <Text size="sm" tone="default" className="mb-4">
           {description}
         </Text>
-        {showConfirm ? (
+        {isConfirming ? (
           <div className={DANGER_ZONE_CONFIRM_ROW_CLASS}>
             <Button
               variant="danger"
               size="sm"
-              onClick={handleAction}
+              onClick={confirm}
               disabled={isLoading}
             >
               {isLoading ? 'Processing...' : confirmLabel}
@@ -82,7 +74,7 @@ const DangerZone = forwardRef<HTMLDivElement, DangerZoneProps>(
             <Button
               variant="secondary"
               size="sm"
-              onClick={handleCancel}
+              onClick={cancel}
               disabled={isLoading}
             >
               {cancelLabel}
@@ -93,7 +85,7 @@ const DangerZone = forwardRef<HTMLDivElement, DangerZoneProps>(
             variant="ghost"
             size="md"
             className={DANGER_ZONE_PRIMARY_OVERRIDE_CLASS}
-            onClick={() => setShowConfirm(true)}
+            onClick={request}
           >
             {actionLabel}
           </Button>

@@ -211,5 +211,25 @@ export {
 } from './components/organisms/WizardStep';
 export { DangerZone, type DangerZoneProps } from './components/organisms/DangerZone';
 
+// ─── Hooks ───────────────────────────────────────────────────────────────
+export {
+  useDelayedVisibility,
+  type UseDelayedVisibility,
+  type UseDelayedVisibilityOptions,
+} from './hooks/use-delayed-visibility';
+export {
+  useClipboard,
+  type UseClipboard,
+  type UseClipboardOptions,
+} from './hooks/use-clipboard';
+export { useWebShare, type UseWebShare } from './hooks/use-web-share';
+export { useScrollLock } from './hooks/use-scroll-lock';
+export { useOnEscape } from './hooks/use-on-escape';
+export {
+  useConfirmAction,
+  type UseConfirmAction,
+} from './hooks/use-confirm-action';
+
 // ─── Utilities ───────────────────────────────────────────────────────────
 export { cn } from './utils/cn';
+export { formatModifier } from './utils/format';

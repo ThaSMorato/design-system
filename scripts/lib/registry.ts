@@ -32,6 +32,12 @@ const CN_IMPORT_PATTERN = /from\s+(['"])(?:\.\.\/)+utils\/cn\1/g;
 const UTIL_IMPORT_PATTERN = /from\s+(['"])(?:\.\.\/)+utils\/(?!cn\1)(\w+)\1/g;
 
 /**
+ * Matches relative imports of internal hooks (e.g. `../../../hooks/use-clipboard`).
+ * Each hook ships as its own `registry:hook` item targeting `hooks/<name>.ts`.
+ */
+const HOOK_IMPORT_PATTERN = /from\s+(['"])(?:\.\.\/)+hooks\/([\w-]+)\1/g;
+
+/**
  * Matches relative imports of other design-system components:
  * same-tier siblings (`from '../Spinner'`) and cross-tier imports
  * (`from '../../atoms/Avatar'`).
@@ -56,7 +62,8 @@ export function toKebabCase(name: string): string {
 export function rewriteImports(content: string): string {
   return content
     .replace(CN_IMPORT_PATTERN, "from '@/lib/utils'")
-    .replace(UTIL_IMPORT_PATTERN, "from '@/lib/$2'");
+    .replace(UTIL_IMPORT_PATTERN, "from '@/lib/$2'")
+    .replace(HOOK_IMPORT_PATTERN, "from '@/hooks/$2'");
 }
 
 /** Detects internal util modules (other than cn) imported by the content. */
@@ -66,6 +73,15 @@ export function detectUtilDependencies(content: string): string[] {
     utils.add(match[2]);
   }
   return [...utils].sort();
+}
+
+/** Detects internal hook modules imported by the content (kebab-case names). */
+export function detectHookDependencies(content: string): string[] {
+  const hooks = new Set<string>();
+  for (const match of content.matchAll(HOOK_IMPORT_PATTERN)) {
+    hooks.add(match[2]);
+  }
+  return [...hooks].sort();
 }
 
 /** Resolves an import specifier to its npm package name (handles scopes/subpaths). */
@@ -164,6 +180,9 @@ export function buildComponentItem(component: ComponentSource): RegistryItem {
     for (const util of detectUtilDependencies(rawContent)) {
       registryDependencies.add(`/r/${util}.json`);
     }
+    for (const hook of detectHookDependencies(rawContent)) {
+      registryDependencies.add(`/r/${hook}.json`);
+    }
     files.push({
       path: `src/components/${component.tier}/${component.directory}/${fileName}`,
       content: rewriteImports(rawContent),
@@ -204,6 +223,27 @@ export function buildUtilItem(name: string, content: string): RegistryItem {
         content,
         type: 'registry:lib',
         target: `lib/${name}.ts`,
+      },
+    ],
+  };
+}
+
+/** Builds a `registry:hook` item for an internal hook module. */
+export function buildHookItem(name: string, content: string): RegistryItem {
+  return {
+    $schema: REGISTRY_ITEM_SCHEMA,
+    name,
+    type: 'registry:item',
+    title: name,
+    description: `${name} hook from the Morato design system.`,
+    dependencies: detectNpmDependencies(content),
+    registryDependencies: [],
+    files: [
+      {
+        path: `src/hooks/${name}.ts`,
+        content,
+        type: 'registry:hook',
+        target: `hooks/${name}.ts`,
       },
     ],
   };

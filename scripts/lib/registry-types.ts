@@ -4,7 +4,11 @@
  * - https://ui.shadcn.com/schema/registry-item.json
  */
 
-export type RegistryFileType = 'registry:ui' | 'registry:lib' | 'registry:file';
+export type RegistryFileType =
+  | 'registry:ui'
+  | 'registry:lib'
+  | 'registry:hook'
+  | 'registry:file';
 
 export interface RegistryFile {
   path: string;
